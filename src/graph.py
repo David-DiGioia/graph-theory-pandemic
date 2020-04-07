@@ -1,25 +1,25 @@
 # Here we can write any data structures related to graphs and all the functionality that goes with it
 
 
-vertexId = 0
+vertex_id = 0
 
 
 class Vertex:
     def __init__(self, infected=False, adjacent=None):
-        global vertexId
+        global vertex_id
 
         # Is this vertex infected?
         self.infected = infected
 
         # adjacentVertices is a set of all vertices' IDs which are adjacent to this one
         if adjacent is None:
-            self.adjacentVertices = set()
+            self.adjacent_vertices = set()
         else:
-            self.adjacentVertices = adjacent
+            self.adjacent_vertices = adjacent
 
         # Assign a unique id to this vertex (so that we can reference it later)
-        self.id = vertexId
-        vertexId += 1
+        self.id = vertex_id
+        vertex_id += 1
 
 
 class Graph:
@@ -36,18 +36,19 @@ class Graph:
 
     def make_edge(self, v1, v2):
         # Since this is an undirected graph, we add the vertices to each other's list of adjacent vertices
-        self.vertices[v1].adjacentVertices.add(v2)
-        self.vertices[v2].adjacentVertices.add(v1)
+        self.vertices[v1].adjacent_vertices.add(v2)
+        self.vertices[v2].adjacent_vertices.add(v1)
 
     def update_frontier(self):
-        for vertex in self.frontier:
-            for adjacent in vertex.adjacentVertices:
-                if not adjacent.infected:
+        for vertex in self.frontier.copy():
+            for adjacent in vertex.adjacent_vertices:
+                if not self.vertices[adjacent].infected:
                     break
             # If all vertices adjacent to vertex are infected already, remove vertex from the frontier
             self.frontier.remove(vertex)
 
-    def infect_vertex(self, vertex):
+    def infect_vertex(self, id):
+        vertex = self.vertices[id]
         vertex.infected = True
         self.frontier.add(vertex)
         self.update_frontier()
