@@ -6,17 +6,52 @@ from graphics import *
 
 
 # width and height of the screen
-WIDTH = 640
-HEIGHT = 480
+WIDTH = 1280
+HEIGHT = 720
+# Background color of the screen
+bg_color = (80, 80, 80)
+# Main graph we will be manipulating
 graph = None
-drawable_objects = []
+# The vertex objects and buttons that will be drawn to screen
+drawable_vertices = []
+buttons = []
+# Mode types are as follows: vertex=0, edge=1, infect=2
+# The mode determines what happens when you click on screen (inserting vertices/edges, or infecting vertices)
+mode = 0
 
 
+# This draws the drawable objects to the screen every frame
 def render(screen):
-    screen.fill((150, 150, 150))
-    for do in drawable_objects:
-        do.draw(screen, graph)
+    screen.fill(bg_color)
+    for dv in drawable_vertices:
+        dv.draw(screen, graph)
+    for button in buttons:
+        button.draw(screen)
     pygame.display.flip()
+
+
+# Creates both a drawable vertex and a logical vertex
+def make_vertex(pos):
+    v = Vertex()
+    graph.add_vertex(v)
+    vd = VertexDrawable(v.id, pos)
+    drawable_vertices.append(vd)
+
+
+# These three functions determine what happens when buttons are clicked on screen
+def button_vertex_callback():
+    global mode
+    mode = 0
+
+
+def button_edge_callback():
+    global mode
+    mode = 1
+
+
+def button_infect_callback():
+    global mode
+    mode = 2
 
 
 def main():
@@ -25,33 +60,46 @@ def main():
     pygame.init()
     pygame.display.set_caption("Graph Theory Epidemic")
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    init_graphics()
+
+    button_vertical_spacing = 60
+    buttons.append(Button((20, 20), "Vertex Mode", button_vertex_callback))
+    buttons[0].selected = True
+    buttons.append(Button((20, 20 + button_vertical_spacing), "Edge Mode", button_edge_callback))
+    buttons.append(Button((20, 20 + 2*button_vertical_spacing), "Infect Mode", button_infect_callback))
 
     # Make new graph
     graph = Graph()
 
-    # Populate graph with 5 vertices which are unconnected to each other
-    for i in range(5):
-        v = Vertex()
-        graph.add_vertex(v)
-        vd = VertexDrawable(v.id, (i * 40, 100))
-        drawable_objects.append(vd)
-
-    # Make an edge between the vertex with id=1 and the vertex with id=2
-    graph.make_edge(0, 1)
-
-    graph.infect_vertex(1)
-
-    # Vertex with id=0 has 1 adjacent vertex since we just made an edge connected to it
-    print("Vertex with id=1 has this many adjacent vertices: " + str(len(graph.vertices[0].adjacent_vertices)))
-
-    running = True
     # main loop
+    running = True
     while running:
         render(screen)
 
         # event handling, gets all event from the event queue
         for event in pygame.event.get():
-            # only do something if the event is of type QUIT
+            if event.type == pygame.MOUSEBUTTONUP:
+                pos = pygame.mouse.get_pos()
+
+                clicked_button = None
+                for button in buttons:
+                    if button.rect.collidepoint(pos):
+                        clicked_button = button
+
+                if clicked_button is not None:
+                    for button in buttons:
+                        button.selected = False
+                    clicked_button.click_event()
+                # vertex mode
+                elif mode == 0:
+                    make_vertex(pos)
+                # edge mode
+                elif mode == 1:
+                    pass
+                # infect mode
+                elif mode == 2:
+                    pass
+
             if event.type == pygame.QUIT:
                 # change the value to False, to exit the main loop
                 running = False
