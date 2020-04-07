@@ -49,6 +49,7 @@ class Graph:
 
     def infect_vertex(self, vertex):
         vertex.infected = True
+        self.frontier.add(vertex)
         self.update_frontier()
 
     def get_vertex(self, id):
