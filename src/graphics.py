@@ -15,6 +15,8 @@ selected_color = (255, 255, 255)
 button_font = None
 button_color = (150, 150, 150)
 button_color_selected = (110, 110, 110)
+edge_color = (0, 0, 0)
+edge_thickness = 3
 
 
 # Return the squared distance between loc1 and loc2
@@ -46,6 +48,10 @@ class VertexDrawable:
         else:
             color = healthy_color
         pygame.draw.circle(screen, color, self.location, vertex_radius)
+
+    def draw_edges(self, screen, graph, drawable_vertices):
+        for adj_id in graph.get_vertex(self.id).adjacent_vertices:
+            pygame.draw.line(screen, edge_color, self.location, drawable_vertices[adj_id].location, edge_thickness)
 
     # Returns true if pos lies inside this vertex's circle on screen
     def collide_point(self, pos):

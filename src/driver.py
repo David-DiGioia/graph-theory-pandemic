@@ -13,7 +13,7 @@ bg_color = (80, 80, 80)
 # Main graph we will be manipulating
 graph = None
 # The vertex objects and buttons that will be drawn to screen
-drawable_vertices = []
+drawable_vertices = {}
 buttons = []
 # Mode types are as follows: vertex=0, edge=1, infect=2
 # The mode determines what happens when you click on screen (inserting vertices/edges, or infecting vertices)
@@ -24,7 +24,9 @@ selected_vertex = None
 # This draws the drawable objects to the screen every frame
 def render(screen):
     screen.fill(bg_color)
-    for dv in drawable_vertices:
+    for dv_id, dv in drawable_vertices.items():
+        dv.draw_edges(screen, graph, drawable_vertices)
+    for dv_id, dv in drawable_vertices.items():
         dv.draw(screen, graph)
     for button in buttons:
         button.draw(screen)
@@ -36,7 +38,7 @@ def make_vertex(pos):
     v = Vertex()
     graph.add_vertex(v)
     vd = VertexDrawable(v.id, pos)
-    drawable_vertices.append(vd)
+    drawable_vertices[v.id] = vd
 
 
 # These three functions determine what happens when buttons are clicked on screen
@@ -61,7 +63,7 @@ def button_infect_callback():
 def deselect_all():
     global selected_vertex
     selected_vertex = None
-    for dv in drawable_vertices:
+    for dv_id, dv in drawable_vertices.items():
         dv.selected = False
 
 
@@ -83,12 +85,19 @@ def handle_click(pos):
     # edge mode
     elif mode == 1:
         clicked_vertex = False
-        for dv in drawable_vertices:
+        for dv_id, dv in drawable_vertices.items():
             if dv.collide_point(pos):
                 clicked_vertex = True
-                deselect_all()
-                dv.selected = True
-                selected_vertex = dv
+                # If we've already selected one vertex, then make an edge between the two selected
+                if selected_vertex is not None:
+                    v1 = graph.get_vertex(dv_id)
+                    v2 = graph.get_vertex(selected_vertex.id)
+                    v1.adjacent_vertices.add(selected_vertex.id)
+                    v2.adjacent_vertices.add(dv_id)
+                    deselect_all()
+                else:
+                    dv.selected = True
+                    selected_vertex = dv
                 break
         if not clicked_vertex:
             deselect_all()
