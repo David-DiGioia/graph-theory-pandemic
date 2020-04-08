@@ -17,6 +17,13 @@ button_color = (150, 150, 150)
 button_color_selected = (110, 110, 110)
 
 
+# Return the squared distance between loc1 and loc2
+def distance_squared(loc1, loc2):
+    x = loc2[0] - loc1[0]
+    y = loc2[1] - loc1[1]
+    return x*x + y*y
+
+
 def init_graphics():
     global button_font
     button_font = pygame.freetype.SysFont("Times New Roman", 20)
@@ -28,14 +35,21 @@ class VertexDrawable:
         self.id = id
         self.location = location
         self.selected = False
+        self.radius = vertex_radius
 
     def draw(self, screen, graph):
         # Draw infected vertices as different color than healthy ones
-        if graph.get_vertex(self.id).infected:
+        if self.selected:
+            color = selected_color
+        elif graph.get_vertex(self.id).infected:
             color = infected_color
         else:
             color = healthy_color
         pygame.draw.circle(screen, color, self.location, vertex_radius)
+
+    # Returns true if pos lies inside this vertex's circle on screen
+    def collide_point(self, pos):
+        return distance_squared(pos, self.location) <= self.radius * self.radius
 
 
 class Button:

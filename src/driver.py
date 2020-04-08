@@ -18,6 +18,7 @@ buttons = []
 # Mode types are as follows: vertex=0, edge=1, infect=2
 # The mode determines what happens when you click on screen (inserting vertices/edges, or infecting vertices)
 mode = 0
+selected_vertex = None
 
 
 # This draws the drawable objects to the screen every frame
@@ -44,14 +45,56 @@ def button_vertex_callback():
     mode = 0
 
 
+# Button callback function
 def button_edge_callback():
     global mode
     mode = 1
 
 
+# Button callback function
 def button_infect_callback():
     global mode
     mode = 2
+
+
+# Deselect all vertices
+def deselect_all():
+    global selected_vertex
+    selected_vertex = None
+    for dv in drawable_vertices:
+        dv.selected = False
+
+
+# When user clicks screen, this function determines what happens depending on which mode is active
+def handle_click(pos):
+    global selected_vertex
+    clicked_button = None
+    for button in buttons:
+        if button.rect.collidepoint(pos):
+            clicked_button = button
+
+    if clicked_button is not None:
+        for button in buttons:
+            button.selected = False
+        clicked_button.click_event()
+    # vertex mode
+    elif mode == 0:
+        make_vertex(pos)
+    # edge mode
+    elif mode == 1:
+        clicked_vertex = False
+        for dv in drawable_vertices:
+            if dv.collide_point(pos):
+                clicked_vertex = True
+                deselect_all()
+                dv.selected = True
+                selected_vertex = dv
+                break
+        if not clicked_vertex:
+            deselect_all()
+    # infect mode
+    elif mode == 2:
+        pass
 
 
 def main():
@@ -80,25 +123,7 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONUP:
                 pos = pygame.mouse.get_pos()
-
-                clicked_button = None
-                for button in buttons:
-                    if button.rect.collidepoint(pos):
-                        clicked_button = button
-
-                if clicked_button is not None:
-                    for button in buttons:
-                        button.selected = False
-                    clicked_button.click_event()
-                # vertex mode
-                elif mode == 0:
-                    make_vertex(pos)
-                # edge mode
-                elif mode == 1:
-                    pass
-                # infect mode
-                elif mode == 2:
-                    pass
+                handle_click(pos)
 
             if event.type == pygame.QUIT:
                 # change the value to False, to exit the main loop
