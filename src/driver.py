@@ -67,9 +67,45 @@ def deselect_all():
         dv.selected = False
 
 
+# In vertex mode we can make/delete vertices when we click
+def click_vertex_mode(pos):
+    make_vertex(pos)
+
+
+# In edge mode we can make/delete edges when we click
+def click_edge_mode(pos):
+    global selected_vertex
+    clicked_vertex = False
+    for dv_id, dv in drawable_vertices.items():
+        # Have we clicked on one of the vertices?
+        if dv.collide_point(pos):
+            clicked_vertex = True
+            # If we've already selected one vertex, then make an edge between the two selected
+            if selected_vertex is not None:
+                graph.make_edge(dv_id, selected_vertex.id)
+                deselect_all()
+            else:
+                dv.selected = True
+                selected_vertex = dv
+            break
+    if not clicked_vertex:
+        deselect_all()
+
+
+# In infect mode we can infect/disinfect vertices when we click
+def click_infect_mode(pos):
+    for dv_id, dv in drawable_vertices.items():
+        # Have we clicked on one of the vertices?
+        if dv.collide_point(pos):
+            if graph.get_vertex(dv_id).infected:
+                graph.disinfect_vertex(dv.id)
+            else:
+                graph.infect_vertex(dv.id)
+            break
+
+
 # When user clicks screen, this function determines what happens depending on which mode is active
 def handle_click(pos):
-    global selected_vertex
     clicked_button = None
     for button in buttons:
         if button.rect.collidepoint(pos):
@@ -79,31 +115,14 @@ def handle_click(pos):
         for button in buttons:
             button.selected = False
         clicked_button.click_event()
-    # vertex mode
+
+    # If we haven't clicked a button, then what we do next depends on what mode we're in
     elif mode == 0:
-        make_vertex(pos)
-    # edge mode
+        click_vertex_mode(pos)
     elif mode == 1:
-        clicked_vertex = False
-        for dv_id, dv in drawable_vertices.items():
-            if dv.collide_point(pos):
-                clicked_vertex = True
-                # If we've already selected one vertex, then make an edge between the two selected
-                if selected_vertex is not None:
-                    v1 = graph.get_vertex(dv_id)
-                    v2 = graph.get_vertex(selected_vertex.id)
-                    v1.adjacent_vertices.add(selected_vertex.id)
-                    v2.adjacent_vertices.add(dv_id)
-                    deselect_all()
-                else:
-                    dv.selected = True
-                    selected_vertex = dv
-                break
-        if not clicked_vertex:
-            deselect_all()
-    # infect mode
+        click_edge_mode(pos)
     elif mode == 2:
-        pass
+        click_infect_mode(pos)
 
 
 def main():

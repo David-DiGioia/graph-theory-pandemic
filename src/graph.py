@@ -39,7 +39,7 @@ class Graph:
         self.vertices[v1].adjacent_vertices.add(v2)
         self.vertices[v2].adjacent_vertices.add(v1)
 
-    def update_frontier(self):
+    def update_frontier_infect(self):
         for vertex in self.frontier.copy():
             for adjacent in vertex.adjacent_vertices:
                 if not self.vertices[adjacent].infected:
@@ -47,11 +47,22 @@ class Graph:
             # If all vertices adjacent to vertex are infected already, remove vertex from the frontier
             self.frontier.remove(vertex)
 
-    def infect_vertex(self, id):
-        vertex = self.vertices[id]
+    def update_frontier_disinfect(self, vertex):
+        for adj_id in vertex.adjacent_vertices:
+            if self.vertices[adj_id].infected:
+                self.frontier.add(self.vertices[adj_id])
+
+    def infect_vertex(self, v_id):
+        vertex = self.vertices[v_id]
         vertex.infected = True
         self.frontier.add(vertex)
-        self.update_frontier()
+        self.update_frontier_infect()
 
-    def get_vertex(self, id):
-        return self.vertices[id]
+    def disinfect_vertex(self, v_id):
+        vertex = self.vertices[v_id]
+        vertex.infected = False
+        self.frontier.discard(vertex)
+        self.update_frontier_disinfect(vertex)
+
+    def get_vertex(self, v_id):
+        return self.vertices[v_id]
