@@ -59,6 +59,11 @@ def button_infect_callback():
     mode = 2
 
 
+# Button callback function
+def button_test_callback():
+    test_graph(graph)
+
+
 # Deselect all vertices
 def deselect_all():
     global selected_vertex
@@ -112,9 +117,7 @@ def handle_click(pos):
             clicked_button = button
 
     if clicked_button is not None:
-        for button in buttons:
-            button.selected = False
-        clicked_button.click_event()
+        clicked_button.click_event(buttons)
 
     # If we haven't clicked a button, then what we do next depends on what mode we're in
     elif mode == 0:
@@ -125,6 +128,16 @@ def handle_click(pos):
         click_infect_mode(pos)
 
 
+# Create the clickable gui buttons which appear on screen
+def make_buttons():
+    button_vertical_spacing = 60
+    buttons.append(Button((20, 20), "Vertex Mode", button_vertex_callback))
+    buttons[0].selected = True
+    buttons.append(Button((20, 20 + button_vertical_spacing), "Edge Mode", button_edge_callback))
+    buttons.append(Button((20, 20 + 2*button_vertical_spacing), "Infect Mode", button_infect_callback))
+    buttons.append(Button((20, 20 + 3*button_vertical_spacing), "TEST", button_test_callback, False))
+
+
 def main():
     global graph
     # initialize the pygame module
@@ -132,12 +145,7 @@ def main():
     pygame.display.set_caption("Graph Theory Epidemic")
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     init_graphics()
-
-    button_vertical_spacing = 60
-    buttons.append(Button((20, 20), "Vertex Mode", button_vertex_callback))
-    buttons[0].selected = True
-    buttons.append(Button((20, 20 + button_vertical_spacing), "Edge Mode", button_edge_callback))
-    buttons.append(Button((20, 20 + 2*button_vertical_spacing), "Infect Mode", button_infect_callback))
+    make_buttons()
 
     # Make new graph
     graph = Graph()

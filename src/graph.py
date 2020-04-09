@@ -1,12 +1,46 @@
 # Here we can write any data structures related to graphs and all the functionality that goes with it
 
 
-vertex_id = 0
+vertex_id_current = 0
+
+
+# Until we make some more controls on screen, you can use this to test ideas with the graph
+# that you create when running the program
+def test_graph(graph):
+    print("Test graph called!")
+    # graph refers to the graph object that you made on screen.
+    # You can access all of it's vertices using graph.vertices, which is a dictionary of the form
+    # { vertex_id : vertex }. In other words, the key is a vertex_id and the value is the actual vertex.
+    # We use a vertex_id bc it's helpful sometimes when you need to refer to the vertex but you can just loop
+    # through all the vertices and use the vertex data without worrying about the key if you want, like this:
+    for vertex_id, vertex in graph.vertices.items():
+        print("The id of this vertex is " + str(vertex_id) + ", and this vertex's infected status is: " + str(vertex.infected))
+    print("")
+
+    # And the graph also has a member called frontier, which is just the set of vertices which have potential to
+    # infect other vertices. In other words, it is the set of infected vertices which is connected by an edge to at
+    # least 1 non-infected vertex.
+    # NOTE: the frontier is a little broken at the moment, not all the right vertices are added to it. This needs
+    # to be fixed!
+    print("Graph's frontier:")
+    for vertex in graph.frontier:
+        print("Vertex with id " + str(vertex.id) + " is a member of the graph's frontier.")
+    print("")
+
+    # Each vertex has the following data members: infected, adjacent_vertices, and id.
+    # Infected is just a boolean telling whether or not the vertex is infected.
+    # adjacent_vertices is a set of vertex id's which are adjacent to this vertex. In other words, they share an
+    # edge with one another. This is what defines the edges in the graph.
+    for vertex_id, vertex in graph.vertices.items():
+        print("Vertex with id " + str(vertex_id) + " is connected to vertices with the following IDs:")
+        for adjacent_vertex_id in vertex.adjacent_vertices:
+            print(adjacent_vertex_id)
+
 
 
 class Vertex:
     def __init__(self, infected=False, adjacent=None):
-        global vertex_id
+        global vertex_id_current
 
         # Is this vertex infected?
         self.infected = infected
@@ -18,8 +52,8 @@ class Vertex:
             self.adjacent_vertices = adjacent
 
         # Assign a unique id to this vertex (so that we can reference it later)
-        self.id = vertex_id
-        vertex_id += 1
+        self.id = vertex_id_current
+        vertex_id_current += 1
 
 
 class Graph:

@@ -59,12 +59,13 @@ class VertexDrawable:
 
 
 class Button:
-    def __init__(self, location, text, call_back=None):
+    def __init__(self, location, text, call_back=None, selectable=True):
         self.location = location
         self.text = text
         self.selected = False
         self.rect = pygame.Rect(self.location[0], self.location[1], 120, 40)
         self.call_back = call_back
+        self.selectable = selectable
 
     def draw(self, screen):
         global button_font
@@ -75,7 +76,10 @@ class Button:
         pygame.draw.rect(screen, color, self.rect)
         button_font.render_to(screen, self.location, self.text)
 
-    def click_event(self):
+    def click_event(self, buttons):
         if self.call_back is not None:
             self.call_back()
-        self.selected = True
+        if self.selectable:
+            for button in buttons:
+                button.selected = False
+            self.selected = True
