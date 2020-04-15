@@ -66,6 +66,11 @@ def button_infect_callback():
 
 
 # Button callback function
+def button_step_callback():
+    spread_disease(graph, 0.5)
+
+
+# Button callback function
 def button_test_callback():
     test_graph(graph)
 
@@ -151,7 +156,8 @@ def make_buttons():
     buttons[0].selected = True
     buttons.append(Button((20, 20 + button_vertical_spacing), "Edge Mode", button_edge_callback))
     buttons.append(Button((20, 20 + 2*button_vertical_spacing), "Infect Mode", button_infect_callback))
-    buttons.append(Button((20, 20 + 3*button_vertical_spacing), "TEST", button_test_callback, False))
+    buttons.append(Button((20, 20 + 3*button_vertical_spacing), "Step", button_step_callback, False))
+    buttons.append(Button((20, 20 + 4*button_vertical_spacing), "TEST", button_test_callback, False))
 
 
 def main():

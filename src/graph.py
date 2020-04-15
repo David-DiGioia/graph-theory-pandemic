@@ -1,5 +1,5 @@
 # Here we can write any data structures related to graphs and all the functionality that goes with it
-
+from random import random
 
 vertex_id_current = 0
 
@@ -36,6 +36,16 @@ def test_graph(graph):
         for adjacent_vertex_id in vertex.adjacent_vertices:
             print(adjacent_vertex_id)
 
+
+# Spread the disease with probability p
+def spread_disease(graph, p):
+    for v_id, v in graph.vertices.copy().items():
+        if v.infected:
+            for adj_id in v.adjacent_vertices:
+                # If the adjacent vertex is not infected, there is a p chance they become infected
+                if not graph.vertices[adj_id].infected:
+                    if random() <= p:
+                        graph.infect_vertex(adj_id)
 
 class Vertex:
     def __init__(self, infected=False, adjacent=None):
