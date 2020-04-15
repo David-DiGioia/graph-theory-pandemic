@@ -96,9 +96,14 @@ def click_edge_mode(pos):
         # Have we clicked on one of the vertices?
         if dv.collide_point(pos):
             clicked_vertex = True
-            # If we've already selected one vertex, then make an edge between the two selected
+            # If we've already selected one vertex, then make/delete an edge between the two selected
             if selected_vertex is not None:
-                graph.make_edge(dv_id, selected_vertex.id)
+                # If an edge already exists, we'll delete it
+                if graph.adjacent(dv_id, selected_vertex.id):
+                    graph.delete_edge(dv_id, selected_vertex.id)
+                # Otherwise we make a new edge
+                else:
+                    graph.make_edge(dv_id, selected_vertex.id)
                 deselect_all()
             else:
                 dv.selected = True

@@ -78,6 +78,14 @@ class Graph:
         self.vertices[v1].adjacent_vertices.add(v2)
         self.vertices[v2].adjacent_vertices.add(v1)
 
+    def delete_edge(self, v1_id, v2_id):
+        self.vertices[v1_id].adjacent_vertices.remove(v2_id)
+        self.vertices[v2_id].adjacent_vertices.remove(v1_id)
+
+    # Are these two vertices connected by an edge?
+    def adjacent(self, v1_id, v2_id):
+        return v2_id in self.vertices[v1_id].adjacent_vertices
+
     def update_frontier_infect(self):
         for vertex in self.frontier.copy():
             for adjacent in vertex.adjacent_vertices:
