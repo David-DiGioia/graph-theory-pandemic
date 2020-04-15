@@ -1,5 +1,6 @@
 # Here we can write any data structures related to graphs and all the functionality that goes with it
 from random import random
+import copy
 
 vertex_id_current = 0
 
@@ -39,7 +40,10 @@ def test_graph(graph):
 
 # Spread the disease with probability p
 def spread_disease(graph, p):
-    for v_id, v in graph.vertices.copy().items():
+    # We make a copy of the vertices so that a vertex infected this timestep can not
+    # infect other vertices until the next time step
+    vertices_copy = copy.deepcopy(graph.vertices)
+    for v_id, v in vertices_copy.items():
         if v.infected:
             for adj_id in v.adjacent_vertices:
                 # If the adjacent vertex is not infected, there is a p chance they become infected

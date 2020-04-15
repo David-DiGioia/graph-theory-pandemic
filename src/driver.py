@@ -18,7 +18,10 @@ buttons = []
 # Mode types are as follows: vertex=0, edge=1, infect=2
 # The mode determines what happens when you click on screen (inserting vertices/edges, or infecting vertices)
 mode = 0
+# Which vertex is currently selected by user?
 selected_vertex = None
+# What is the probability of the disease spreading on each edge?
+p = 0.2
 
 
 # This draws the drawable objects to the screen every frame
@@ -67,7 +70,7 @@ def button_infect_callback():
 
 # Button callback function
 def button_step_callback():
-    spread_disease(graph, 0.5)
+    spread_disease(graph, p)
 
 
 # Button callback function
