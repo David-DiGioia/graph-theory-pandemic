@@ -41,6 +41,12 @@ def make_vertex(pos):
     drawable_vertices[v.id] = vd
 
 
+# Deletes drawable and logical vertex
+def delete_vertex(v_id):
+    graph.delete_vertex(v_id)
+    del drawable_vertices[v_id]
+
+
 # These three functions determine what happens when buttons are clicked on screen
 def button_vertex_callback():
     global mode
@@ -74,6 +80,11 @@ def deselect_all():
 
 # In vertex mode we can make/delete vertices when we click
 def click_vertex_mode(pos):
+    for dv_id, dv in drawable_vertices.items():
+        # Have we clicked on one of the vertices?
+        if dv.collide_point(pos):
+            delete_vertex(dv_id)
+            return
     make_vertex(pos)
 
 

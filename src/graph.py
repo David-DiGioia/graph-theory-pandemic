@@ -37,7 +37,6 @@ def test_graph(graph):
             print(adjacent_vertex_id)
 
 
-
 class Vertex:
     def __init__(self, infected=False, adjacent=None):
         global vertex_id_current
@@ -67,6 +66,12 @@ class Graph:
     def add_vertex(self, vertex):
         # Make the vertex's id number the key to accessing the vertex in the dictionary
         self.vertices[vertex.id] = vertex
+
+    def delete_vertex(self, v_id):
+        # Remove the edges connecting to this vertex
+        for adj_id in self.vertices[v_id].adjacent_vertices:
+            self.vertices[adj_id].adjacent_vertices.remove(v_id)
+        del self.vertices[v_id]
 
     def make_edge(self, v1, v2):
         # Since this is an undirected graph, we add the vertices to each other's list of adjacent vertices
