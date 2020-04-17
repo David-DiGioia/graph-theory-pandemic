@@ -3,6 +3,7 @@ from random import random
 import copy
 
 vertex_id_current = 0
+current_day = 0
 
 
 # Until we make some more controls on screen, you can use this to test ideas with the graph
@@ -40,6 +41,9 @@ def test_graph(graph):
 
 # Spread the disease with probability p
 def spread_disease(graph, p):
+    global current_day
+    current_day += 1
+    print("The current day is: " + str(current_day))
     # We make a copy of the vertices so that a vertex infected this timestep can not
     # infect other vertices until the next time step
     vertices_copy = copy.deepcopy(graph.vertices)
@@ -50,6 +54,7 @@ def spread_disease(graph, p):
                 if not graph.vertices[adj_id].infected:
                     if random() <= p:
                         graph.infect_vertex(adj_id)
+
 
 class Vertex:
     def __init__(self, infected=False, adjacent=None):
@@ -105,8 +110,8 @@ class Graph:
             for adjacent in vertex.adjacent_vertices:
                 if not self.vertices[adjacent].infected:
                     break
-            # If all vertices adjacent to vertex are infected already, remove vertex from the frontier
-            self.frontier.remove(vertex)
+                # If all vertices adjacent to vertex are infected already, remove vertex from the frontier
+                self.frontier.remove(vertex)
 
     def update_frontier_disinfect(self, vertex):
         for adj_id in vertex.adjacent_vertices:

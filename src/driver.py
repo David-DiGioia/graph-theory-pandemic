@@ -152,6 +152,13 @@ def handle_click(pos):
         click_infect_mode(pos)
 
 
+# for debug
+def print_frontier():
+    print("Frontier:")
+    for v in graph.frontier:
+        print(v.id)
+
+
 # Create the clickable gui buttons which appear on screen
 def make_buttons():
     button_vertical_spacing = 60
@@ -161,6 +168,7 @@ def make_buttons():
     buttons.append(Button((20, 20 + 2*button_vertical_spacing), "Infect Mode", button_infect_callback))
     buttons.append(Button((20, 20 + 3*button_vertical_spacing), "Step", button_step_callback, False))
     buttons.append(Button((20, 20 + 4*button_vertical_spacing), "TEST", button_test_callback, False))
+    buttons.append(Button((20, 20 + 5*button_vertical_spacing), "frontier", print_frontier, False))
 
 
 def main():
