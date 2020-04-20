@@ -1,6 +1,7 @@
 # This file contains the code related to what will be displayed on the screen
 import pygame
 import pygame.freetype
+import graph
 
 
 # Radius of vertices in pixels
@@ -29,6 +30,10 @@ def distance_squared(loc1, loc2):
 def init_graphics():
     global button_font
     button_font = pygame.freetype.SysFont("Times New Roman", 20)
+
+
+def display_day(screen, pos):
+    button_font.render_to(screen, pos, "Day: " + str(graph.current_day))
 
 
 # Contains all the information needed to draw a vertex to the screen

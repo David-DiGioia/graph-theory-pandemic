@@ -53,9 +53,11 @@ def spread_disease(graph, p):
                     if random() <= p:
                         graph.infect_vertex(adj_id)
 
+
 def spread_disease_all(graph, p):
-    while len(graph.frontier) >0:
+    while len(graph.frontier) > 0:
         spread_disease(graph, p)
+
 
 class Vertex:
     def __init__(self, infected=False, adjacent=None):

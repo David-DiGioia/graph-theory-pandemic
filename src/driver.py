@@ -1,8 +1,8 @@
 # This is the driver file, so we can do the startup work of the program here,
 # like instantiating a graph and initializing a window to show graphics in
 import pygame
-from graph import *
-from graphics import *
+import graph
+import graphics
 
 
 # width and height of the screen
@@ -11,7 +11,7 @@ HEIGHT = 720
 # Background color of the screen
 bg_color = (80, 80, 80)
 # Main graph we will be manipulating
-graph = None
+main_graph = None
 # The vertex objects and buttons that will be drawn to screen
 drawable_vertices = {}
 buttons = []
@@ -28,25 +28,26 @@ p = 0.2
 def render(screen):
     screen.fill(bg_color)
     for dv_id, dv in drawable_vertices.items():
-        dv.draw_edges(screen, graph, drawable_vertices)
+        dv.draw_edges(screen, main_graph, drawable_vertices)
     for dv_id, dv in drawable_vertices.items():
-        dv.draw(screen, graph)
+        dv.draw(screen, main_graph)
     for button in buttons:
         button.draw(screen)
+    graphics.display_day(screen, (WIDTH - 100, 25))
     pygame.display.flip()
 
 
 # Creates both a drawable vertex and a logical vertex
 def make_vertex(pos):
-    v = Vertex()
-    graph.add_vertex(v)
-    vd = VertexDrawable(v.id, pos)
+    v = graph.Vertex()
+    main_graph.add_vertex(v)
+    vd = graphics.VertexDrawable(v.id, pos)
     drawable_vertices[v.id] = vd
 
 
 # Deletes drawable and logical vertex
 def delete_vertex(v_id):
-    graph.delete_vertex(v_id)
+    main_graph.delete_vertex(v_id)
     del drawable_vertices[v_id]
 
 
@@ -70,16 +71,16 @@ def button_infect_callback():
 
 # Button callback function
 def button_step_callback():
-    spread_disease(graph, p)
+    graph.spread_disease(main_graph, p)
 
 
 # Button callback function
 def button_test_callback():
-    test_graph(graph)
+    graph.test_graph(main_graph)
 
 # Button callback function
 def button_play_callback():
-    spread_disease_all(graph, p)
+    graph.spread_disease_all(main_graph, p)
 
 # Deselect all vertices
 def deselect_all():
@@ -110,11 +111,11 @@ def click_edge_mode(pos):
             # If we've already selected one vertex, then make/delete an edge between the two selected
             if selected_vertex is not None:
                 # If an edge already exists, we'll delete it
-                if graph.adjacent(dv_id, selected_vertex.id):
-                    graph.delete_edge(dv_id, selected_vertex.id)
+                if main_graph.adjacent(dv_id, selected_vertex.id):
+                    main_graph.delete_edge(dv_id, selected_vertex.id)
                 # Otherwise we make a new edge
                 else:
-                    graph.make_edge(dv_id, selected_vertex.id)
+                    main_graph.make_edge(dv_id, selected_vertex.id)
                 deselect_all()
             else:
                 dv.selected = True
@@ -129,10 +130,10 @@ def click_infect_mode(pos):
     for dv_id, dv in drawable_vertices.items():
         # Have we clicked on one of the vertices?
         if dv.collide_point(pos):
-            if graph.get_vertex(dv_id).infected:
-                graph.disinfect_vertex(dv.id)
+            if main_graph.get_vertex(dv_id).infected:
+                main_graph.disinfect_vertex(dv.id)
             else:
-                graph.infect_vertex(dv.id)
+                main_graph.infect_vertex(dv.id)
             break
 
 
@@ -158,33 +159,33 @@ def handle_click(pos):
 # for debug
 def print_frontier():
     print("Frontier:")
-    for v in graph.frontier:
+    for v in main_graph.frontier:
         print(v.id)
 
 
 # Create the clickable gui buttons which appear on screen
 def make_buttons():
     button_vertical_spacing = 60
-    buttons.append(Button((20, 20), "Vertex Mode", button_vertex_callback))
+    buttons.append(graphics.Button((20, 20), "Vertex Mode", button_vertex_callback))
     buttons[0].selected = True
-    buttons.append(Button((20, 20 + button_vertical_spacing), "Edge Mode", button_edge_callback))
-    buttons.append(Button((20, 20 + 2*button_vertical_spacing), "Infect Mode", button_infect_callback))
-    buttons.append(Button((20, 20 + 3*button_vertical_spacing), "Step", button_step_callback, False))
-    buttons.append(Button((20, 20 + 4*button_vertical_spacing), "TEST", button_test_callback, False))
-    buttons.append(Button((20, 20 + 5*button_vertical_spacing), "frontier", print_frontier, False))
-    buttons.append(Button((20, 20 + 6*button_vertical_spacing), "Play Infection", button_play_callback, False))
+    buttons.append(graphics.Button((20, 20 + button_vertical_spacing), "Edge Mode", button_edge_callback))
+    buttons.append(graphics.Button((20, 20 + 2*button_vertical_spacing), "Infect Mode", button_infect_callback))
+    buttons.append(graphics.Button((20, 20 + 3*button_vertical_spacing), "Step", button_step_callback, False))
+    buttons.append(graphics.Button((20, 20 + 4*button_vertical_spacing), "TEST", button_test_callback, False))
+    buttons.append(graphics.Button((20, 20 + 5*button_vertical_spacing), "frontier", print_frontier, False))
+    buttons.append(graphics.Button((20, 20 + 6*button_vertical_spacing), "Play Infection", button_play_callback, False))
 
 def main():
-    global graph
+    global main_graph
     # initialize the pygame module
     pygame.init()
     pygame.display.set_caption("Graph Theory Epidemic")
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    init_graphics()
+    graphics.init_graphics()
     make_buttons()
 
     # Make new graph
-    graph = Graph()
+    main_graph = graph.Graph()
 
     # main loop
     running = True
