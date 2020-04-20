@@ -22,8 +22,6 @@ def test_graph(graph):
     # And the graph also has a member called frontier, which is just the set of vertices which have potential to
     # infect other vertices. In other words, it is the set of infected vertices which is connected by an edge to at
     # least 1 non-infected vertex.
-    # NOTE: the frontier is a little broken at the moment, not all the right vertices are added to it. This needs
-    # to be fixed!
     print("Graph's frontier:")
     for vertex in graph.frontier:
         print("Vertex with id " + str(vertex.id) + " is a member of the graph's frontier.")
@@ -55,6 +53,9 @@ def spread_disease(graph, p):
                     if random() <= p:
                         graph.infect_vertex(adj_id)
 
+def spread_disease_all(graph, p):
+    while len(graph.frontier) >0:
+        spread_disease(graph, p)
 
 class Vertex:
     def __init__(self, infected=False, adjacent=None):
@@ -107,10 +108,13 @@ class Graph:
 
     def update_frontier_infect(self):
         for vertex in self.frontier.copy():
+            has_healthy_neighbor = False
             for adjacent in vertex.adjacent_vertices:
                 if not self.vertices[adjacent].infected:
+                    has_healthy_neighbor = True
                     break
                 # If all vertices adjacent to vertex are infected already, remove vertex from the frontier
+            if not has_healthy_neighbor:
                 self.frontier.remove(vertex)
 
     def update_frontier_disinfect(self, vertex):

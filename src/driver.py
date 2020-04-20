@@ -77,6 +77,9 @@ def button_step_callback():
 def button_test_callback():
     test_graph(graph)
 
+# Button callback function
+def button_play_callback():
+    spread_disease_all(graph, p)
 
 # Deselect all vertices
 def deselect_all():
@@ -169,7 +172,7 @@ def make_buttons():
     buttons.append(Button((20, 20 + 3*button_vertical_spacing), "Step", button_step_callback, False))
     buttons.append(Button((20, 20 + 4*button_vertical_spacing), "TEST", button_test_callback, False))
     buttons.append(Button((20, 20 + 5*button_vertical_spacing), "frontier", print_frontier, False))
-
+    buttons.append(Button((20, 20 + 6*button_vertical_spacing), "Play Infection", button_play_callback, False))
 
 def main():
     global graph
