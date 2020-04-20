@@ -3,96 +3,87 @@
 import pygame
 import graph
 import graphics
-
-
-# width and height of the screen
-WIDTH = 1280
-HEIGHT = 720
-# Background color of the screen
-bg_color = (80, 80, 80)
-# Main graph we will be manipulating
-main_graph = None
-# The vertex objects and buttons that will be drawn to screen
-drawable_vertices = {}
-buttons = []
-# Mode types are as follows: vertex=0, edge=1, infect=2
-# The mode determines what happens when you click on screen (inserting vertices/edges, or infecting vertices)
-mode = 0
-# Which vertex is currently selected by user?
-selected_vertex = None
-# What is the probability of the disease spreading on each edge?
-p = 0.2
+import data
 
 
 # This draws the drawable objects to the screen every frame
 def render(screen):
-    screen.fill(bg_color)
-    for dv_id, dv in drawable_vertices.items():
-        dv.draw_edges(screen, main_graph, drawable_vertices)
-    for dv_id, dv in drawable_vertices.items():
-        dv.draw(screen, main_graph)
-    for button in buttons:
+    screen.fill(data.bg_color)
+    for dv_id, dv in data.drawable_vertices.items():
+        dv.draw_edges(screen, data.main_graph, data.drawable_vertices)
+    for dv_id, dv in data.drawable_vertices.items():
+        dv.draw(screen, data.main_graph)
+    for button in data.buttons:
         button.draw(screen)
-    graphics.display_day(screen, (WIDTH - 100, 25))
+    for ib in data.input_boxes:
+        ib.draw(screen)
+    graphics.display_variables(screen, (data.WIDTH - 100, 25))
     pygame.display.flip()
 
 
 # Creates both a drawable vertex and a logical vertex
 def make_vertex(pos):
     v = graph.Vertex()
-    main_graph.add_vertex(v)
+    data.main_graph.add_vertex(v)
     vd = graphics.VertexDrawable(v.id, pos)
-    drawable_vertices[v.id] = vd
+    data.drawable_vertices[v.id] = vd
 
 
 # Deletes drawable and logical vertex
 def delete_vertex(v_id):
-    main_graph.delete_vertex(v_id)
-    del drawable_vertices[v_id]
+    data.main_graph.delete_vertex(v_id)
+    del data.drawable_vertices[v_id]
 
 
 # These three functions determine what happens when buttons are clicked on screen
 def button_vertex_callback():
-    global mode
-    mode = 0
+    data.mode = 0
 
 
 # Button callback function
 def button_edge_callback():
-    global mode
-    mode = 1
+    data.mode = 1
 
 
 # Button callback function
 def button_infect_callback():
-    global mode
-    mode = 2
+    data.mode = 2
 
 
 # Button callback function
 def button_step_callback():
-    graph.spread_disease(main_graph, p)
+    graph.spread_disease(data.main_graph, data.p)
 
 
 # Button callback function
 def button_test_callback():
-    graph.test_graph(main_graph)
+    graph.test_graph(data.main_graph)
+
 
 # Button callback function
 def button_play_callback():
-    graph.spread_disease_all(main_graph, p)
+    graph.spread_disease_all(data.main_graph, data.p)
+
+
+# InputBox callback function
+def input_box_p_callback(text):
+    try:
+        data.p = float(text)
+    except:
+        print("Invalid input for p entered")
+
 
 # Deselect all vertices
 def deselect_all():
     global selected_vertex
     selected_vertex = None
-    for dv_id, dv in drawable_vertices.items():
+    for dv_id, dv in data.drawable_vertices.items():
         dv.selected = False
 
 
 # In vertex mode we can make/delete vertices when we click
 def click_vertex_mode(pos):
-    for dv_id, dv in drawable_vertices.items():
+    for dv_id, dv in data.drawable_vertices.items():
         # Have we clicked on one of the vertices?
         if dv.collide_point(pos):
             delete_vertex(dv_id)
@@ -104,18 +95,18 @@ def click_vertex_mode(pos):
 def click_edge_mode(pos):
     global selected_vertex
     clicked_vertex = False
-    for dv_id, dv in drawable_vertices.items():
+    for dv_id, dv in data.drawable_vertices.items():
         # Have we clicked on one of the vertices?
         if dv.collide_point(pos):
             clicked_vertex = True
             # If we've already selected one vertex, then make/delete an edge between the two selected
             if selected_vertex is not None:
                 # If an edge already exists, we'll delete it
-                if main_graph.adjacent(dv_id, selected_vertex.id):
-                    main_graph.delete_edge(dv_id, selected_vertex.id)
+                if data.main_graph.adjacent(dv_id, selected_vertex.id):
+                    data.main_graph.delete_edge(dv_id, selected_vertex.id)
                 # Otherwise we make a new edge
                 else:
-                    main_graph.make_edge(dv_id, selected_vertex.id)
+                    data.main_graph.make_edge(dv_id, selected_vertex.id)
                 deselect_all()
             else:
                 dv.selected = True
@@ -127,65 +118,80 @@ def click_edge_mode(pos):
 
 # In infect mode we can infect/disinfect vertices when we click
 def click_infect_mode(pos):
-    for dv_id, dv in drawable_vertices.items():
+    for dv_id, dv in data.drawable_vertices.items():
         # Have we clicked on one of the vertices?
         if dv.collide_point(pos):
-            if main_graph.get_vertex(dv_id).infected:
-                main_graph.disinfect_vertex(dv.id)
+            if data.main_graph.get_vertex(dv_id).infected:
+                data.main_graph.disinfect_vertex(dv.id)
             else:
-                main_graph.infect_vertex(dv.id)
+                data.main_graph.infect_vertex(dv.id)
             break
 
 
 # When user clicks screen, this function determines what happens depending on which mode is active
 def handle_click(pos):
+    global active_input_box
     clicked_button = None
-    for button in buttons:
+    for button in data.buttons:
         if button.rect.collidepoint(pos):
             clicked_button = button
 
     if clicked_button is not None:
-        clicked_button.click_event(buttons)
+        clicked_button.click_event(data.buttons)
+
+    clicked_input_box = None
+    for ib in data.input_boxes:
+        if ib.rect.collidepoint(pos):
+            clicked_input_box = ib
+
+    if clicked_input_box is None:
+        for ib in data.input_boxes:
+            ib.selected = False
+
+    if clicked_input_box is not None:
+        clicked_input_box.click_event(data.input_boxes)
+        active_input_box = clicked_input_box
 
     # If we haven't clicked a button, then what we do next depends on what mode we're in
-    elif mode == 0:
+    elif data.mode == 0:
         click_vertex_mode(pos)
-    elif mode == 1:
+    elif data.mode == 1:
         click_edge_mode(pos)
-    elif mode == 2:
+    elif data.mode == 2:
         click_infect_mode(pos)
 
 
 # for debug
 def print_frontier():
     print("Frontier:")
-    for v in main_graph.frontier:
+    for v in data.main_graph.frontier:
         print(v.id)
 
 
 # Create the clickable gui buttons which appear on screen
 def make_buttons():
     button_vertical_spacing = 60
-    buttons.append(graphics.Button((20, 20), "Vertex Mode", button_vertex_callback))
-    buttons[0].selected = True
-    buttons.append(graphics.Button((20, 20 + button_vertical_spacing), "Edge Mode", button_edge_callback))
-    buttons.append(graphics.Button((20, 20 + 2*button_vertical_spacing), "Infect Mode", button_infect_callback))
-    buttons.append(graphics.Button((20, 20 + 3*button_vertical_spacing), "Step", button_step_callback, False))
-    buttons.append(graphics.Button((20, 20 + 4*button_vertical_spacing), "TEST", button_test_callback, False))
-    buttons.append(graphics.Button((20, 20 + 5*button_vertical_spacing), "frontier", print_frontier, False))
-    buttons.append(graphics.Button((20, 20 + 6*button_vertical_spacing), "Play Infection", button_play_callback, False))
+    data.buttons.append(graphics.Button((20, 20), "Vertex Mode", button_vertex_callback))
+    data.buttons[0].selected = True
+    data.buttons.append(graphics.Button((20, 20 + button_vertical_spacing), "Edge Mode", button_edge_callback))
+    data.buttons.append(graphics.Button((20, 20 + 2*button_vertical_spacing), "Infect Mode", button_infect_callback))
+    data.buttons.append(graphics.Button((20, 20 + 3*button_vertical_spacing), "Step", button_step_callback, False))
+    # buttons.append(graphics.Button((20, 20 + 4*button_vertical_spacing), "TEST", button_test_callback, False))
+    data.buttons.append(graphics.Button((20, 20 + 4*button_vertical_spacing), "frontier", print_frontier, False))
+    data.buttons.append(graphics.Button((20, 20 + 5*button_vertical_spacing), "Play Infection", button_play_callback, False))
+    data.input_boxes.append(graphics.InputBox((data.WIDTH - 140, 100), input_box_p_callback))
+
 
 def main():
-    global main_graph
     # initialize the pygame module
     pygame.init()
     pygame.display.set_caption("Graph Theory Epidemic")
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    screen = pygame.display.set_mode((data.WIDTH, data.HEIGHT))
     graphics.init_graphics()
     make_buttons()
 
     # Make new graph
-    main_graph = graph.Graph()
+    data.main_graph = graph.Graph()
 
     # main loop
     running = True
@@ -201,6 +207,10 @@ def main():
             if event.type == pygame.QUIT:
                 # change the value to False, to exit the main loop
                 running = False
+
+            if event.type == pygame.KEYDOWN:
+                if active_input_box is not None and active_input_box.selected:
+                    active_input_box.key_event(event)
 
 
 # run the driver.py function only if this module is executed as the driver.py script

@@ -2,22 +2,8 @@
 import pygame
 import pygame.freetype
 import graph
-
-
-# Radius of vertices in pixels
-vertex_radius = 10
-# Color of healthy vertices
-healthy_color = (0, 255, 0)
-# Color of infected vertices
-infected_color = (255, 0, 0)
-# Color of selected vertices
-selected_color = (255, 255, 255)
-# Font to be used in button ui
-button_font = None
-button_color = (150, 150, 150)
-button_color_selected = (110, 110, 110)
-edge_color = (0, 0, 0)
-edge_thickness = 3
+import driver
+import data
 
 
 # Return the squared distance between loc1 and loc2
@@ -28,12 +14,14 @@ def distance_squared(loc1, loc2):
 
 
 def init_graphics():
-    global button_font
-    button_font = pygame.freetype.SysFont("Times New Roman", 20)
+    data.button_font = pygame.freetype.SysFont("Times New Roman", 20)
 
 
-def display_day(screen, pos):
-    button_font.render_to(screen, pos, "Day: " + str(graph.current_day))
+def display_variables(screen, pos):
+    vertical_spacing = 20
+    data.button_font.render_to(screen, pos, "Day: " + str(graph.current_day))
+    data.button_font.render_to(screen, (pos[0], pos[1] + vertical_spacing), "p:      " + str(data.p))
+    data.button_font.render_to(screen, (data.WIDTH - 140, 80), "Adjust p value:")
 
 
 # Contains all the information needed to draw a vertex to the screen
@@ -42,21 +30,21 @@ class VertexDrawable:
         self.id = id
         self.location = location
         self.selected = False
-        self.radius = vertex_radius
+        self.radius = data.vertex_radius
 
     def draw(self, screen, graph):
         # Draw infected vertices as different color than healthy ones
         if self.selected:
-            color = selected_color
+            color = data.selected_color
         elif graph.get_vertex(self.id).infected:
-            color = infected_color
+            color = data.infected_color
         else:
-            color = healthy_color
-        pygame.draw.circle(screen, color, self.location, vertex_radius)
+            color = data.healthy_color
+        pygame.draw.circle(screen, color, self.location, data.vertex_radius)
 
     def draw_edges(self, screen, graph, drawable_vertices):
         for adj_id in graph.get_vertex(self.id).adjacent_vertices:
-            pygame.draw.line(screen, edge_color, self.location, drawable_vertices[adj_id].location, edge_thickness)
+            pygame.draw.line(screen, data.edge_color, self.location, drawable_vertices[adj_id].location, data.edge_thickness)
 
     # Returns true if pos lies inside this vertex's circle on screen
     def collide_point(self, pos):
@@ -75,11 +63,11 @@ class Button:
     def draw(self, screen):
         global button_font
         if self.selected:
-            color = button_color_selected
+            color = data.button_color_selected
         else:
-            color = button_color
+            color = data.button_color
         pygame.draw.rect(screen, color, self.rect)
-        button_font.render_to(screen, self.location, self.text)
+        data.button_font.render_to(screen, self.location, self.text)
 
     def click_event(self, buttons):
         if self.call_back is not None:
@@ -88,3 +76,36 @@ class Button:
             for button in buttons:
                 button.selected = False
             self.selected = True
+
+
+class InputBox:
+    def __init__(self, location, call_back=None):
+        self.location = location
+        self.text = ""
+        self.selected = False
+        self.rect = pygame.Rect(self.location[0], self.location[1], 120, 20)
+        self.call_back = call_back
+
+    def draw(self, screen):
+        global button_font
+        if self.selected:
+            color = data.input_box_color_selected
+        else:
+            color = data.input_box_color
+        pygame.draw.rect(screen, color, self.rect)
+        data.button_font.render_to(screen, self.location, self.text)
+
+    def click_event(self, input_boxes):
+        for ib in input_boxes:
+            ib.selected = False
+        self.selected = True
+
+    def key_event(self, event):
+        if event.key == pygame.K_RETURN:
+            self.call_back(self.text)
+            self.text = ''
+            self.selected = False
+        elif event.key == pygame.K_BACKSPACE:
+            self.text = self.text[:-1]
+        else:
+            self.text += event.unicode

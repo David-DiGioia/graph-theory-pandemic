@@ -41,7 +41,6 @@ def test_graph(graph):
 def spread_disease(graph, p):
     global current_day
     current_day += 1
-    print("The current day is: " + str(current_day))
     # We make a copy of the vertices so that a vertex infected this timestep can not
     # infect other vertices until the next time step
     vertices_copy = copy.deepcopy(graph.vertices)
