@@ -18,6 +18,8 @@ mode = 0
 selected_vertex = None
 # What is the probability of the disease spreading on each edge?
 p = 0.2
+# a place to hold our list of completion times
+completed_on = []
 # --------------------------------------------------------------------------------------------------------
 
 # GRAPHICS DATA --------------------------------------------------------------------------------------------

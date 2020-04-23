@@ -63,7 +63,16 @@ def button_test_callback():
 # Button callback function
 def button_play_callback():
     graph.spread_disease_all(data.main_graph, data.p)
+    data.completed_on.append(graph.current_day)
 
+# Button callback function
+def button_reset_today():
+    graph.current_day = 0
+
+# Button callback function
+def button_list_dates():
+    print("The completion dates are ")
+    print(data.completed_on)
 
 # InputBox callback function
 def input_box_p_callback(text):
@@ -162,10 +171,8 @@ def handle_click(pos):
 
 
 # for debug
-def print_frontier():
-    print("Frontier:")
-    for v in data.main_graph.frontier:
-        print(v.id)
+def print_current_day():
+    print("Today is day " + str(graph.current_day))
 
 
 # Create the clickable gui buttons which appear on screen
@@ -176,9 +183,10 @@ def make_buttons():
     data.buttons.append(graphics.Button((20, 20 + button_vertical_spacing), "Edge Mode", button_edge_callback))
     data.buttons.append(graphics.Button((20, 20 + 2*button_vertical_spacing), "Infect Mode", button_infect_callback))
     data.buttons.append(graphics.Button((20, 20 + 3*button_vertical_spacing), "Step", button_step_callback, False))
-    # buttons.append(graphics.Button((20, 20 + 4*button_vertical_spacing), "TEST", button_test_callback, False))
-    data.buttons.append(graphics.Button((20, 20 + 4*button_vertical_spacing), "frontier", print_frontier, False))
+    data.buttons.append(graphics.Button((20, 20 + 4*button_vertical_spacing), "TEST", button_test_callback, False))
     data.buttons.append(graphics.Button((20, 20 + 5*button_vertical_spacing), "Play Infection", button_play_callback, False))
+    data.buttons.append(graphics.Button((20, 20 + 6*button_vertical_spacing), "List of Dates", button_list_dates, False))
+    # data.buttons.append(graphics.Button((20, 20 + 7* button_vertical_spacing), "Reset Date", button_reset_today, False))
     data.input_boxes.append(graphics.InputBox((data.WIDTH - 140, 100), input_box_p_callback))
 
 
