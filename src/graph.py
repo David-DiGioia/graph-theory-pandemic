@@ -65,6 +65,9 @@ class Vertex:
         # Is this vertex infected?
         self.infected = infected
 
+        # How long does it take this vertex to heal?
+        self.heal_days = random.randint(14)
+
         # adjacentVertices is a set of all vertices' IDs which are adjacent to this one
         if adjacent is None:
             self.adjacent_vertices = set()
