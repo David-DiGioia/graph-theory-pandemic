@@ -1,6 +1,7 @@
 # Here we can write any data structures related to graphs and all the functionality that goes with it
-from random import random
+import random
 import copy
+import data
 
 vertex_id_current = 0
 current_day = 0
@@ -46,10 +47,14 @@ def spread_disease(graph, p):
     vertices_copy = copy.deepcopy(graph.vertices)
     for v_id, v in vertices_copy.items():
         if v.infected:
+            graph.vertices[v_id].heal_days += 1
+            if graph.vertices[v_id].heal_days == data.d:
+                graph.disinfect_vertex(v_id)
+                graph.vertices[v_id].heal_days = 0
             for adj_id in v.adjacent_vertices:
                 # If the adjacent vertex is not infected, there is a p chance they become infected
                 if not graph.vertices[adj_id].infected:
-                    if random() <= p:
+                    if random.random() <= p:
                         graph.infect_vertex(adj_id)
 
 
@@ -66,7 +71,7 @@ class Vertex:
         self.infected = infected
 
         # How long does it take this vertex to heal?
-        self.heal_days = random.randint(14)
+        self.heal_days = 0
 
         # adjacentVertices is a set of all vertices' IDs which are adjacent to this one
         if adjacent is None:
