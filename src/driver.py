@@ -65,14 +65,17 @@ def button_play_callback():
     graph.spread_disease_all(data.main_graph, data.p)
     data.completed_on.append(graph.current_day)
 
+
 # Button callback function
 def button_reset_today():
     graph.current_day = 0
+
 
 # Button callback function
 def button_list_dates():
     print("The completion dates are ")
     print(data.completed_on)
+
 
 # InputBox callback function
 def input_box_p_callback(text):
@@ -80,6 +83,14 @@ def input_box_p_callback(text):
         data.p = float(text)
     except:
         print("Invalid input for p entered")
+
+
+# InputBox callback function
+def input_box_d_callback(text):
+    try:
+        data.d = int(text)
+    except:
+        print("Invalid input for d entered")
 
 
 # Deselect all vertices
@@ -187,7 +198,8 @@ def make_buttons():
     data.buttons.append(graphics.Button((20, 20 + 5*button_vertical_spacing), "Play Infection", button_play_callback, False))
     data.buttons.append(graphics.Button((20, 20 + 6*button_vertical_spacing), "List of Dates", button_list_dates, False))
     # data.buttons.append(graphics.Button((20, 20 + 7* button_vertical_spacing), "Reset Date", button_reset_today, False))
-    data.input_boxes.append(graphics.InputBox((data.WIDTH - 140, 100), input_box_p_callback))
+    data.input_boxes.append(graphics.InputBox((data.WIDTH - 140, 110), input_box_p_callback))
+    data.input_boxes.append(graphics.InputBox((data.WIDTH - 140, 160), input_box_d_callback))
 
 
 def main():

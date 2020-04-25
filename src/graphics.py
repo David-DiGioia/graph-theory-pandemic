@@ -21,7 +21,9 @@ def display_variables(screen, pos):
     vertical_spacing = 20
     data.button_font.render_to(screen, pos, "Day: " + str(graph.current_day))
     data.button_font.render_to(screen, (pos[0], pos[1] + vertical_spacing), "p:      " + str(data.p))
-    data.button_font.render_to(screen, (data.WIDTH - 140, 80), "Adjust p value:")
+    data.button_font.render_to(screen, (pos[0], pos[1] + 2*vertical_spacing), "d:      " + str(data.d))
+    data.button_font.render_to(screen, (data.WIDTH - 140, 90), "Adjust p value:")
+    data.button_font.render_to(screen, (data.WIDTH - 140, 142), "Adjust d value:")
 
 
 # Contains all the information needed to draw a vertex to the screen
