@@ -6,7 +6,6 @@ import data
 vertex_id_current = 0
 current_day = 0
 
-
 # Until we make some more controls on screen, you can use this to test ideas with the graph
 # that you create when running the program
 def test_graph(graph):
@@ -62,6 +61,17 @@ def spread_disease_all(graph, p):
     while len(graph.frontier) > 0:
         spread_disease(graph, p)
 
+def spread_disease_multi(g, p, d, repeats):
+    global current_day
+    for i in range(repeats):
+        gCopy = Graph()
+        gCopy.vertices = copy.deepcopy(g.vertices)
+        gCopy.frontier = copy.deepcopy(g.frontier)
+        current_day = 0
+        spread_disease_all(gCopy,p)
+        data.completed_on.append(current_day)
+        print("The completion dates are ")
+        print(data.completed_on)
 
 class Vertex:
     def __init__(self, infected=False, adjacent=None):

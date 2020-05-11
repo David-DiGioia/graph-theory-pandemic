@@ -4,7 +4,7 @@ import pygame
 import graph
 import graphics
 import data
-
+import datetime
 
 # This draws the drawable objects to the screen every frame
 def render(screen):
@@ -34,6 +34,12 @@ def delete_vertex(v_id):
     data.main_graph.delete_vertex(v_id)
     del data.drawable_vertices[v_id]
 
+def write_to_file():
+    f = open("disease_output","a")
+    f.write("\n" + str(datetime.datetime.now()))
+    f.write("\nThe completion dates are " + str(data.completed_on))
+    f.close()
+
 
 # These three functions determine what happens when buttons are clicked on screen
 def button_vertex_callback():
@@ -59,22 +65,26 @@ def button_step_callback():
 def button_test_callback():
     graph.test_graph(data.main_graph)
 
-
 # Button callback function
 def button_play_callback():
     graph.spread_disease_all(data.main_graph, data.p)
     data.completed_on.append(graph.current_day)
 
-
 # Button callback function
 def button_reset_today():
     graph.current_day = 0
-
 
 # Button callback function
 def button_list_dates():
     print("The completion dates are ")
     print(data.completed_on)
+
+# Button callback function
+def button_copy_run():
+    graph.spread_disease_multi(data.main_graph,data.p,data.d,data.repeats)
+
+def button_record_dates():
+    write_to_file()
 
 
 # InputBox callback function
@@ -92,6 +102,11 @@ def input_box_d_callback(text):
     except:
         print("Invalid input for d entered")
 
+def input_box_repeats_callback(text):
+    try:
+        data.repeats = int(text)
+    except:
+        print("Invalid input for repeats entered")
 
 # Deselect all vertices
 def deselect_all():
@@ -197,9 +212,12 @@ def make_buttons():
     data.buttons.append(graphics.Button((20, 20 + 4*button_vertical_spacing), "TEST", button_test_callback, False))
     data.buttons.append(graphics.Button((20, 20 + 5*button_vertical_spacing), "Play Infection", button_play_callback, False))
     data.buttons.append(graphics.Button((20, 20 + 6*button_vertical_spacing), "List of Dates", button_list_dates, False))
-    # data.buttons.append(graphics.Button((20, 20 + 7* button_vertical_spacing), "Reset Date", button_reset_today, False))
-    data.input_boxes.append(graphics.InputBox((data.WIDTH - 140, 110), input_box_p_callback))
-    data.input_boxes.append(graphics.InputBox((data.WIDTH - 140, 160), input_box_d_callback))
+    data.buttons.append(graphics.Button((20, 20 + 7* button_vertical_spacing), "Run multiple times", button_copy_run, False))
+    data.buttons.append(graphics.Button((20, 20 + 8* button_vertical_spacing), "Write it down", button_record_dates, False))
+    data.input_boxes.append(graphics.InputBox((data.WIDTH - 140, 160), input_box_p_callback))
+    data.input_boxes.append(graphics.InputBox((data.WIDTH - 140, 210), input_box_d_callback))
+    data.input_boxes.append(graphics.InputBox((data.WIDTH - 140, 260), input_box_repeats_callback))
+
 
 
 def main():

@@ -14,7 +14,7 @@ def distance_squared(loc1, loc2):
 
 
 def init_graphics():
-    data.button_font = pygame.freetype.SysFont("Times New Roman", 20)
+    data.button_font = pygame.freetype.SysFont("Arial", 20)
 
 
 def display_variables(screen, pos):
@@ -22,8 +22,10 @@ def display_variables(screen, pos):
     data.button_font.render_to(screen, pos, "Day: " + str(graph.current_day))
     data.button_font.render_to(screen, (pos[0], pos[1] + vertical_spacing), "p:      " + str(data.p))
     data.button_font.render_to(screen, (pos[0], pos[1] + 2*vertical_spacing), "d:      " + str(data.d))
-    data.button_font.render_to(screen, (data.WIDTH - 140, 90), "Adjust p value:")
-    data.button_font.render_to(screen, (data.WIDTH - 140, 142), "Adjust d value:")
+    data.button_font.render_to(screen, (pos[0], pos[1] + 3* vertical_spacing), "reps:      " + str(data.repeats))
+    data.button_font.render_to(screen, (data.WIDTH - 140, 142), "Adjust p value:")
+    data.button_font.render_to(screen, (data.WIDTH - 140, 192), "Adjust d value:")
+    data.button_font.render_to(screen, (data.WIDTH - 140, 242), "Adjust reps:")
 
 
 # Contains all the information needed to draw a vertex to the screen

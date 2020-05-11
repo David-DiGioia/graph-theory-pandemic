@@ -19,7 +19,9 @@ selected_vertex = None
 # What is the probability of the disease spreading on each edge?
 p = 0.2
 # How many days does it take for a vertex to heal? 0 means it never heals
-d = 2
+d = 0
+# How many times do you want to repeat the experiment?
+repeats = 2
 # a place to hold our list of completion times
 completed_on = []
 # --------------------------------------------------------------------------------------------------------
